@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HyS Field">
+<title>HyS Field v3</title>
+<style>
+:root{--bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--bdr:#333;--acc:#e8a020;--acc2:#f5c842;--txt:#f0ede8;--txt2:#9a9690;--txt3:#5a5652;--font:'Courier New',monospace;--rad:6px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,sans-serif;font-size:14px;overscroll-behavior:none}
+.screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
+.hdr{background:var(--bg2);border-bottom:1px solid var(--bdr);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.hdr-logo{font-family:var(--font);font-size:11px;color:var(--acc);letter-spacing:2px;font-weight:bold}
+.hdr-sub{font-size:10px;color:var(--txt3);font-family:var(--font)}
+.hdr-back{background:none;border:none;color:var(--acc);font-size:20px;cursor:pointer;padding:4px 8px 4px 0}
+.hdr-title{font-size:13px;font-weight:600;color:var(--txt);flex:1}
+.content{flex:1;padding:16px;overflow-y:auto;padding-bottom:40px}
+.sec-lbl{font-family:var(--font);font-size:10px;letter-spacing:2px;color:var(--acc);margin:20px 0 10px;text-transform:uppercase}
+.sec-lbl:first-child{margin-top:0}
+.minera-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.mb{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s}
+.mb:active{transform:scale(.97)}.mb.sel{border-color:var(--acc);background:#2a1f00}
+.mb .mc{font-family:var(--font);font-size:14px;font-weight:bold;color:var(--acc2)}
+.mb .mn{font-size:10px;color:var(--txt2);margin-top:3px}.mb.sel .mn{color:var(--acc)}
+.emp-btn{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);padding:11px 13px;cursor:pointer;display:flex;align-items:flex-start;gap:8px;transition:all .15s;margin-bottom:6px}
+.emp-btn:active{border-color:var(--acc)}.emp-btn.sel{border-color:var(--acc);background:#2a1f00}
+.emp-main{flex:1;min-width:0}
+.emp-name{font-size:13px;font-weight:600;color:var(--txt)}
+.emp-srv{font-size:11px;color:var(--txt2);margin-top:2px;font-style:italic;line-height:1.4}
+.emp-tags{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+.tag{font-size:9px;font-family:var(--font);letter-spacing:.5px;padding:2px 7px;border-radius:3px;white-space:nowrap}
+.tag-obra{background:#0d1f3c;color:#7ab3f5;border:1px solid #1a3a6a}
+.tag-srv{background:#0d2a1a;color:#6dbf8d;border:1px solid #1a4a2d}
+.tag-active{background:#1a1a00;color:#c8b840;border:1px solid #3a3800}
+.tag-soon{background:#2a1f00;color:var(--acc2);border:1px solid #4a3500}
+.tag-limited{background:#2a1500;color:#ff9a4a;border:1px solid #4a2800}
+.legal-box{border-radius:var(--rad);padding:10px 13px;margin-bottom:14px;border:1px solid}
+.legal-obra{background:#0a1628;border-color:#1a3a6a}
+.legal-srv{background:#0a1e12;border-color:#1a4a2d}
+.legal-lbl{font-size:9px;font-family:var(--font);letter-spacing:1.5px;margin-bottom:4px}
+.legal-obra .legal-lbl{color:#7ab3f5}.legal-srv .legal-lbl{color:#6dbf8d}
+.legal-text{font-size:12px;font-weight:600}
+.legal-obra .legal-text{color:#b8d4f8}.legal-srv .legal-text{color:#a8d8b8}
+.legal-sub{font-size:10px;margin-top:2px}
+.legal-obra .legal-sub{color:#4a7ab5}.legal-srv .legal-sub{color:#3a7a5a}
+input,textarea,select{width:100%;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);color:var(--txt);font-family:system-ui,-apple-system,sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--acc)}
+input::placeholder,textarea::placeholder{color:var(--txt3)}
+textarea{resize:vertical;min-height:70px}
+select option{background:var(--bg2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{margin-bottom:12px}
+.field label{font-size:10px;color:var(--txt2);display:block;margin-bottom:5px;font-family:var(--font);letter-spacing:1px}
+.act-block{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);padding:12px;margin-bottom:8px}
+.act-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.act-lbl{font-size:10px;font-family:var(--font);letter-spacing:1px;color:var(--acc2)}
+.act-add{background:none;border:1px solid var(--bdr);border-radius:4px;color:var(--txt2);font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--font)}
+.act-add:active{border-color:var(--acc);color:var(--acc)}
+.act-del{background:none;border:none;color:var(--txt3);font-size:16px;cursor:pointer}
+.ev-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:14px}
+.ev-tab{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);padding:8px 4px;text-align:center;cursor:pointer}
+.ev-tab.active{border-color:var(--acc);background:#2a1f00}
+.ev-tab .ti{font-size:17px;display:block;margin-bottom:2px}
+.ev-tab .tl{font-size:9px;color:var(--txt2);font-family:var(--font);letter-spacing:1px;display:block}
+.ev-tab.active .tl{color:var(--acc)}
+.ev-panel{display:none}.ev-panel.active{display:block}
+.cap-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.cap-btn{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:12px 8px;text-align:center;cursor:pointer}
+.cap-btn:active{border-color:var(--acc)}
+.cap-btn .ci{font-size:22px;display:block;margin-bottom:3px}
+.cap-btn .ct{font-size:10px;color:var(--txt2);font-family:var(--font);letter-spacing:.5px}
+input[type=file]{display:none}
+.items-list{display:flex;flex-direction:column;gap:8px}
+.ev-item{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);padding:10px;display:flex;gap:10px;align-items:flex-start}
+.ev-item img{width:52px;height:52px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.ev-item-info{flex:1;min-width:0}
+.ev-type{font-size:9px;font-family:var(--font);letter-spacing:1px;margin-bottom:3px}
+.ev-type.foto{color:#4a9eff}.ev-type.escaneo{color:#4adb7a}.ev-type.captura{color:#c87aff}.ev-type.archivo{color:#ff9a4a}
+.ev-caption{font-size:12px;color:var(--txt);background:transparent;border:none;border-bottom:1px solid var(--bdr);border-radius:0;padding:4px 0;width:100%}
+.ev-caption:focus{border-color:var(--acc);outline:none}
+.ev-sz{font-size:9px;color:var(--txt3);font-family:var(--font);margin-top:3px}
+.ev-del{background:none;border:none;color:var(--txt3);font-size:16px;cursor:pointer;padding:2px 6px;flex-shrink:0}
+.sum-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);padding:12px;margin-bottom:10px}
+.sc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sc-t{font-size:10px;font-family:var(--font);letter-spacing:1px;color:var(--acc)}
+.sc-badge{font-size:9px;font-family:var(--font);background:#2a1f00;color:var(--acc2);padding:3px 8px;border-radius:3px}
+.sc-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #222;font-size:12px}
+.sc-row:last-child{border-bottom:none}
+.sc-row .k{color:var(--txt2)}.sc-row .v{color:var(--txt);font-family:var(--font);font-size:11px;text-align:right;max-width:60%;word-break:break-word}
+.btn-p{width:100%;background:var(--acc);border:none;border-radius:var(--rad);color:#000;font-size:14px;font-weight:700;padding:14px;cursor:pointer;font-family:var(--font);letter-spacing:1px;margin-top:8px}
+.btn-p:active{background:var(--acc2)}
+.btn-s{width:100%;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);color:var(--txt);font-size:13px;padding:12px;cursor:pointer;font-family:var(--font);letter-spacing:1px;margin-top:6px}
+.divider{height:1px;background:var(--bdr);margin:16px 0}
+.help{background:#1a1500;border:1px solid #3a2f00;border-radius:var(--rad);padding:11px;margin-top:10px}
+.help p{font-size:11px;color:#b8a060;font-family:var(--font);line-height:1.8}
+.help strong{color:var(--acc2)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--acc);color:var(--acc);font-family:var(--font);font-size:12px;padding:10px 20px;border-radius:20px;z-index:100;letter-spacing:1px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.rec-item{padding:9px 0;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center}
+.custom-section{background:var(--bg3);border:1px dashed var(--bdr);border-radius:var(--rad);padding:13px;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="s-home" class="screen active">
+  <div class="hdr"><div><div class="hdr-logo">HyS FIELD v3</div><div class="hdr-sub">VISITAS · MINERÍA PATAGONIA</div></div></div>
+  <div class="content">
+    <div class="sec-lbl">Seleccioná el yacimiento</div>
+    <div class="minera-grid">
+      <div class="mb" data-m="CN" onclick="selM(this)"><div class="mc">CN</div><div class="mn">Cerro Negro<br>Newmont</div></div>
+      <div class="mb" data-m="CM" onclick="selM(this)"><div class="mc">CM</div><div class="mn">Cerro Moro<br>Pan Am Silver</div></div>
+      <div class="mb" data-m="CVSA" onclick="selM(this)"><div class="mc">CVSA</div><div class="mn">Cerro Vanguardia<br>AngloGold</div></div>
+      <div class="mb" data-m="MDN" onclick="selM(this)"><div class="mc">MDN</div><div class="mn">Minera Don<br>Nicolás</div></div>
+    </div>
+    <button class="btn-p" onclick="irEmpresas()">SELECCIONAR EMPRESA →</button>
+    <div class="divider"></div>
+    <div class="sec-lbl">Visitas recientes</div>
+    <div id="recientes" style="color:var(--txt3);font-size:12px;font-family:var(--font);padding:6px 0">Sin visitas guardadas.</div>
+  </div>
+</div>
+<div id="s-empresa" class="screen">
+  <div class="hdr"><button class="hdr-back" onclick="ir('s-home')">←</button><div class="hdr-title" id="hdr-emp">Empresa</div></div>
+  <div class="content">
+    <div class="sec-lbl">Empresas registradas</div>
+    <div id="emp-list"></div>
+    <div class="custom-section">
+      <div class="sec-lbl" style="margin-top:0;margin-bottom:10px">Empresa esporádica / nueva</div>
+      <div class="field"><label>RAZÓN SOCIAL</label><input type="text" id="cust-nombre" placeholder="Ej: EBINOX MINING SAS"></div>
+      <div class="field"><label>SERVICIO U OBRA</label><input type="text" id="cust-srv" placeholder="Ej: Revestimiento horno retorta"></div>
+      <div class="field"><label>TIPO</label>
+        <select id="cust-tipo">
+          <option value="servicio">Servicio — Dto. 1338/96 Art. 12</option>
+          <option value="obra">Obra — Res. 231/96 Art. 2</option>
+        </select>
+      </div>
+      <button class="act-add" style="width:100%;padding:10px" onclick="selCustom()">USAR ESTA EMPRESA →</button>
+    </div>
+    <button class="btn-p" onclick="irDatos()" style="margin-top:14px">CONTINUAR → DATOS</button>
+  </div>
+</div>
+<div id="s-datos" class="screen">
+  <div class="hdr"><button class="hdr-back" onclick="ir('s-empresa')">←</button><div class="hdr-title" id="hdr-datos">Datos</div></div>
+  <div class="content">
+    <div id="legal-box"></div>
+    <div id="emp-sel-card" class="sum-card" style="margin-bottom:16px"></div>
+    <div class="sec-lbl">Datos generales</div>
+    <div class="row2">
+      <div class="field"><label>FECHA</label><input type="date" id="fecha"></div>
+      <div class="field"><label>EMPLEADOS</label><input type="number" id="empleados" placeholder="0" min="0"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>HORA INICIO</label><input type="time" id="hora-ini"></div>
+      <div class="field"><label>HORA FIN</label><input type="time" id="hora-fin"></div>
+    </div>
+    <div class="field"><label>HORAS PROFESIONALES</label><input type="number" id="horas-prof" placeholder="0" step="0.5" min="0"></div>
+    <div class="sec-lbl">Capacitaciones</div>
+    <div id="caps-list"></div>
+    <button class="act-add" onclick="addCap()">+ Agregar capacitación</button>
+    <div class="sec-lbl">Inspecciones</div>
+    <div id="insp-list"></div>
+    <button class="act-add" onclick="addInsp()">+ Agregar inspección</button>
+    <div class="sec-lbl">Otros temas</div>
+    <div class="field"><textarea id="otros" placeholder="AGV, OPT/OTT, seguimientos, gestión..."></textarea></div>
+    <button class="btn-p" onclick="ir('s-evidencia')">SIGUIENTE → EVIDENCIA</button>
+  </div>
+</div>
+<div id="s-evidencia" class="screen">
+  <div class="hdr"><button class="hdr-back" onclick="ir('s-datos')">←</button><div class="hdr-title">Evidencia</div></div>
+  <div class="content">
+    <div class="ev-tabs">
+      <div class="ev-tab active" data-tab="foto" onclick="swTab(this)"><span class="ti">📷</span><span class="tl">FOTO</span></div>
+      <div class="ev-tab" data-tab="escaneo" onclick="swTab(this)"><span class="ti">📄</span><span class="tl">ESCANEO</span></div>
+      <div class="ev-tab" data-tab="captura" onclick="swTab(this)"><span class="ti">📱</span><span class="tl">VCC/APP</span></div>
+      <div class="ev-tab" data-tab="archivo" onclick="swTab(this)"><span class="ti">📁</span><span class="tl">ARCHIVO</span></div>
+    </div>
+    <div class="ev-panel active" id="panel-foto">
+      <div class="cap-btns">
+        <div class="cap-btn" onclick="document.getElementById('if-cam').click()"><span class="ci">📸</span><span class="ct">CÁMARA</span></div>
+        <div class="cap-btn" onclick="document.getElementById('if-lib').click()"><span class="ci">🖼</span><span class="ct">GALERÍA</span></div>
+      </div>
+      <input type="file" id="if-cam" accept="image/*" capture="environment" onchange="handleEv(event,'foto')">
+      <input type="file" id="if-lib" accept="image/*" multiple onchange="handleEv(event,'foto')">
+      <div style="font-size:10px;font-family:var(--font);color:var(--txt3);margin-bottom:8px" id="cnt-foto">0 fotos</div>
+      <div class="items-list" id="lst-foto"></div>
+    </div>
+    <div class="ev-panel" id="panel-escaneo">
+      <div class="cap-btns">
+        <div class="cap-btn" onclick="document.getElementById('ie-cam').click()"><span class="ci">📸</span><span class="ct">ESCANEAR</span></div>
+        <div class="cap-btn" onclick="document.getElementById('ie-lib').click()"><span class="ci">🗂</span><span class="ct">GALERÍA</span></div>
+      </div>
+      <input type="file" id="ie-cam" accept="image/*" capture="environment" onchange="handleEv(event,'escaneo')">
+      <input type="file" id="ie-lib" accept="image/*,application/pdf" multiple onchange="handleEv(event,'escaneo')">
+      <div class="help" style="margin-bottom:10px"><p><strong>Para:</strong> actas cap., OPT, registros firmados.</p></div>
+      <div style="font-size:10px;font-family:var(--font);color:var(--txt3);margin-bottom:8px" id="cnt-escaneo">0 escaneos</div>
+      <div class="items-list" id="lst-escaneo"></div>
+    </div>
+    <div class="ev-panel" id="panel-captura">
+      <div class="cap-btns">
+        <div class="cap-btn" onclick="document.getElementById('ic-lib').click()"><span class="ci">🖼</span><span class="ct">CAPTURAS</span></div>
+        <div class="cap-btn" onclick="document.getElementById('ic-cam').click()"><span class="ci">📸</span><span class="ct">CÁMARA</span></div>
+      </div>
+      <input type="file" id="ic-cam" accept="image/*" capture="environment" onchange="handleEv(event,'captura')">
+      <input type="file" id="ic-lib" accept="image/*" multiple onchange="handleEv(event,'captura')">
+      <div class="help" style="margin-bottom:10px"><p><strong>Para:</strong> Forwood VCC · App CN · OTT CM · Plataformas.</p></div>
+      <div style="font-size:10px;font-family:var(--font);color:var(--txt3);margin-bottom:8px" id="cnt-captura">0 capturas</div>
+      <div class="items-list" id="lst-captura"></div>
+    </div>
+    <div class="ev-panel" id="panel-archivo">
+      <div class="cap-btn" style="margin-bottom:10px" onclick="document.getElementById('ia-lib').click()"><span class="ci">📎</span><span class="ct">ADJUNTAR PDF / IMG</span></div>
+      <input type="file" id="ia-lib" accept="image/*,application/pdf" multiple onchange="handleEv(event,'archivo')">
+      <div style="font-size:10px;font-family:var(--font);color:var(--txt3);margin-bottom:8px" id="cnt-archivo">0 archivos</div>
+      <div class="items-list" id="lst-archivo"></div>
+    </div>
+    <div class="divider"></div>
+    <button class="btn-p" onclick="irResumen()">SIGUIENTE → REVISAR</button>
+  </div>
+</div>
+<div id="s-resumen" class="screen">
+  <div class="hdr"><button class="hdr-back" onclick="ir('s-evidencia')">←</button><div class="hdr-title">Resumen</div></div>
+  <div class="content">
+    <div class="sec-lbl">Visita</div>
+    <div class="sum-card" id="sum-visita"></div>
+    <div class="sec-lbl">Evidencia</div>
+    <div class="sum-card" id="sum-ev"></div>
+    <div class="sec-lbl">Exportar</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      <div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px" onclick="exportJSON()">
+        <span style="font-size:24px">💾</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--txt)">Guardar paquete</div><div style="font-size:10px;color:var(--txt2);font-family:var(--font);margin-top:2px">JSON → ARCHIVOS / ONEDRIVE</div></div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad);padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px" onclick="exportTxt()">
+        <span style="font-size:24px">📋</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--txt)">Copiar texto</div><div style="font-size:10px;color:var(--txt2);font-family:var(--font);margin-top:2px">PORTAPAPELES</div></div>
+      </div>
+    </div>
+    <div class="help"><p><strong>FLUJO:</strong> Guardar → OneDrive → Mac → generar_informe.py → PDF → DocuSign → Mail</p></div>
+    <button class="btn-s" onclick="nuevaVisita()">NUEVA VISITA</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const LEGAL={obra:{norma:'Res. 231/96 Art. 2',cls:'legal-obra',lbl:'OBRA',tag:'tag-obra',tagTxt:'OBRA'},servicio:{norma:'Dto. 1338/96 Art. 12',cls:'legal-srv',lbl:'SERVICIO',tag:'tag-srv',tagTxt:'SERVICIO'}};
+const EMPRESAS={CN:[{nombre:'SEEC HNOS SRL',servicio:'Movimiento de suelos, excavaciones y drenajes — MT01 Etapa II',tipo:'obra',estado:'active'},{nombre:'TECIN MINERÍA SRL',servicio:'Mantenimiento equipos SCI y lubricación',tipo:'servicio',estado:'active'},{nombre:'SURVEY SRL',servicio:'Relevamientos topográficos',tipo:'servicio',estado:'active'}],CM:[{nombre:'SURVEY SRL',servicio:'Relevamientos topográficos',tipo:'servicio',estado:'active'},{nombre:'KNIGHT PIÉSOLD',servicio:'Inspección de obras — Dique de cola',tipo:'servicio',estado:'soon'}],CVSA:[{nombre:'TECIN MINERÍA SRL',servicio:'Mantenimiento equipos SCI y lubricación',tipo:'servicio',estado:'active'},{nombre:'QUISPE',servicio:'Ampliación de laboratorio',tipo:'obra',estado:'limited'}],MDN:[{nombre:'ANDEMIRA SRL',servicio:'Ampliación de PAD de lixiviación — Calandrias',tipo:'obra',estado:'active'}]};
+const ESTADO_TAG={active:{cls:'tag-active',txt:'ACTIVO'},soon:{cls:'tag-soon',txt:'PRÓXIMO'},limited:{cls:'tag-limited',txt:'HASTA JUL 2026'}};
+const st={minera:null,empresa:null,servicio:null,tipo:null,caps:[],insps:[],evidencias:[],capId:0,inspId:0,evId:0};
+function lI(t){return LEGAL[t]||LEGAL.servicio}
+function selM(el){document.querySelectorAll('.mb').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');st.minera=el.dataset.m}
+function irEmpresas(){if(!st.minera){showToast('SELECCIONÁ UN YACIMIENTO');return}document.getElementById('hdr-emp').textContent=st.minera+' — Empresa';renderEmpresas();ir('s-empresa')}
+function renderEmpresas(){const emps=EMPRESAS[st.minera]||[];document.getElementById('emp-list').innerHTML=emps.map((e,i)=>{const l=lI(e.tipo);const es=ESTADO_TAG[e.estado]||ESTADO_TAG.active;return`<div class="emp-btn${st.empresa===e.nombre?' sel':''}" onclick="selEmp(${i})"><div class="emp-main"><div class="emp-name">${e.nombre}</div><div class="emp-srv">${e.servicio}</div><div class="emp-tags"><span class="tag ${l.tag}">${l.tagTxt}</span><span class="tag ${es.cls}">${es.txt}</span></div></div></div>`}).join('')}
+function selEmp(i){const e=EMPRESAS[st.minera][i];st.empresa=e.nombre;st.servicio=e.servicio;st.tipo=e.tipo;document.getElementById('cust-nombre').value='';document.getElementById('cust-srv').value='';renderEmpresas();showToast(e.nombre+' ✓')}
+function selCustom(){const n=document.getElementById('cust-nombre').value.trim();const s=document.getElementById('cust-srv').value.trim();const t=document.getElementById('cust-tipo').value;if(!n){showToast('INGRESÁ EL NOMBRE');return}st.empresa=n;st.servicio=s;st.tipo=t;document.querySelectorAll('.emp-btn').forEach(b=>b.classList.remove('sel'));showToast(n+' ✓')}
+function irDatos(){if(!st.empresa){showToast('SELECCIONÁ UNA EMPRESA');return}document.getElementById('hdr-datos').textContent=st.minera+' — '+st.empresa;document.getElementById('fecha').value=new Date().toISOString().split('T')[0];const l=lI(st.tipo);document.getElementById('legal-box').innerHTML=`<div class="legal-box ${l.cls}" style="margin-bottom:12px"><div class="legal-lbl">ENCUADRE LEGAL — ${l.lbl}</div><div class="legal-text">${l.norma}</div><div class="legal-sub">${st.tipo==='obra'?'Obra de construcción · Decreto 911/96 aplica':'Servicio habitual · Horas según dotación'}</div></div>`;document.getElementById('emp-sel-card').innerHTML=`<div class="sc-hdr"><span class="sc-t">EMPRESA</span><span class="sc-badge">${st.minera}</span></div><div class="sc-row"><span class="k">Empresa</span><span class="v">${st.empresa}</span></div><div class="sc-row"><span class="k">Servicio/obra</span><span class="v">${st.servicio||'—'}</span></div><div class="sc-row"><span class="k">Marco legal</span><span class="v">${l.norma}</span></div>`;if(!st.caps.length)addCap();if(!st.insps.length)addInsp();ir('s-datos')}
+function addCap(){const id=++st.capId;st.caps.push({id,tema:'',participantes:'',horas:''});renderCaps()}
+function removeCap(id){st.caps=st.caps.filter(c=>c.id!==id);renderCaps()}
+function renderCaps(){document.getElementById('caps-list').innerHTML=st.caps.map(c=>`<div class="act-block"><div class="act-hdr"><span class="act-lbl">CAPACITACIÓN</span><button class="act-del" onclick="removeCap(${c.id})">✕</button></div><div class="field"><label>TEMA</label><input type="text" value="${c.tema}" placeholder="Ej: Plan de invierno" oninput="updCap(${c.id},'tema',this.value)"></div><div class="row2"><div class="field"><label>PARTICIPANTES</label><input type="number" value="${c.participantes}" placeholder="0" oninput="updCap(${c.id},'participantes',this.value)"></div><div class="field"><label>HORAS</label><input type="number" value="${c.horas}" placeholder="1" step="0.25" oninput="updCap(${c.id},'horas',this.value)"></div></div></div>`).join('')}
+function updCap(id,f,v){const c=st.caps.find(x=>x.id===id);if(c)c[f]=v}
+function addInsp(){const id=++st.inspId;st.insps.push({id,sector:'',observacion:'',hallazgos:'0'});renderInsp()}
+function removeInsp(id){st.insps=st.insps.filter(i=>i.id!==id);renderInsp()}
+function renderInsp(){document.getElementById('insp-list').innerHTML=st.insps.map(i=>`<div class="act-block"><div class="act-hdr"><span class="act-lbl">INSPECCIÓN</span><button class="act-del" onclick="removeInsp(${i.id})">✕</button></div><div class="field"><label>SECTOR / EQUIPO</label><input type="text" value="${i.sector}" placeholder="Ej: Frente de excavación" oninput="updInsp(${i.id},'sector',this.value)"></div><div class="field"><label>OBSERVACIONES</label><input type="text" value="${i.observacion}" placeholder="Condición, hallazgo..." oninput="updInsp(${i.id},'observacion',this.value)"></div><div class="field"><label>N° HALLAZGOS</label><input type="number" value="${i.hallazgos}" placeholder="0" min="0" oninput="updInsp(${i.id},'hallazgos',this.value)"></div></div>`).join('')}
+function updInsp(id,f,v){const i=st.insps.find(x=>x.id===id);if(i)i[f]=v}
+function swTab(el){document.querySelectorAll('.ev-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.ev-panel').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('panel-'+el.dataset.tab).classList.add('active')}
+function compress(file,maxW,q,cb){const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>cb(b),'image/jpeg',q)};img.src=e.target.result};r.readAsDataURL(file)}
+function handleEv(ev,tipo){Array.from(ev.target.files).forEach(file=>{if(file.type.startsWith('image/')){compress(file,tipo==='escaneo'?1400:1000,tipo==='escaneo'?.84:.76,blob=>{const r=new FileReader();r.onload=e=>{const id=++st.evId;st.evidencias.push({id,tipo,dataUrl:e.target.result,caption:'',sizeKB:Math.round(blob.size/1024),origKB:Math.round(file.size/1024),filename:file.name});renderEv(tipo);updCnt(tipo)};r.readAsDataURL(blob)})}else{const r=new FileReader();r.onload=e=>{const id=++st.evId;st.evidencias.push({id,tipo,dataUrl:e.target.result,caption:file.name,sizeKB:Math.round(file.size/1024),origKB:Math.round(file.size/1024),filename:file.name,isPdf:true});renderEv(tipo);updCnt(tipo)};r.readAsDataURL(file)}});ev.target.value=''}
+function renderEv(tipo){document.getElementById('lst-'+tipo).innerHTML=st.evidencias.filter(e=>e.tipo===tipo).map(ev=>`<div class="ev-item">${ev.isPdf?`<div style="width:52px;height:52px;background:var(--bg3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📄</div>`:`<img src="${ev.dataUrl}" alt="">`}<div class="ev-item-info"><div class="ev-type ${ev.tipo}">${ev.tipo.toUpperCase()}</div><input class="ev-caption" type="text" value="${ev.caption}" placeholder="Epígrafe..." oninput="updCapEv(${ev.id},this.value)"><div class="ev-sz">${ev.sizeKB} KB (orig: ${ev.origKB} KB)</div></div><button class="ev-del" onclick="delEv(${ev.id},'${ev.tipo}')">✕</button></div>`).join('')}
+function updCapEv(id,v){const e=st.evidencias.find(x=>x.id===id);if(e)e.caption=v}
+function delEv(id,tipo){st.evidencias=st.evidencias.filter(e=>e.id!==id);renderEv(tipo);updCnt(tipo)}
+function updCnt(tipo){const n=st.evidencias.filter(e=>e.tipo===tipo).length;const lb={foto:'fotos',escaneo:'escaneos',captura:'capturas',archivo:'archivos'};document.getElementById('cnt-'+tipo).textContent=n+' '+lb[tipo]}
+function irResumen(){const f=document.getElementById('fecha').value;const hi=document.getElementById('hora-ini').value;const hf=document.getElementById('hora-fin').value;const em=document.getElementById('empleados').value;const hp=document.getElementById('horas-prof').value;const l=lI(st.tipo);document.getElementById('sum-visita').innerHTML=`<div class="sc-hdr"><span class="sc-t">DATOS</span><span class="sc-badge">${st.minera}</span></div><div class="sc-row"><span class="k">Empresa</span><span class="v">${st.empresa||'—'}</span></div><div class="sc-row"><span class="k">Tipo</span><span class="v">${l.lbl}</span></div><div class="sc-row"><span class="k">Marco legal</span><span class="v">${l.norma}</span></div><div class="sc-row"><span class="k">Fecha</span><span class="v">${f||'—'}</span></div><div class="sc-row"><span class="k">Horario</span><span class="v">${hi||'?'} – ${hf||'?'}</span></div><div class="sc-row"><span class="k">Empl. / Hs prof.</span><span class="v">${em||'0'} / ${hp||'0'}</span></div>`;const cols=['#4a9eff','#4adb7a','#c87aff','#ff9a4a'];const labs=[['foto','Fotos'],['escaneo','Escaneos'],['captura','Capturas VCC'],['archivo','Archivos']];let evHtml=`<div class="sc-hdr"><span class="sc-t">EVIDENCIA</span></div>`;let tot=0;labs.forEach(([t,l],i)=>{const n=st.evidencias.filter(e=>e.tipo===t).length;tot+=n;evHtml+=`<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px"><div style="width:8px;height:8px;border-radius:50%;background:${cols[i]};flex-shrink:0"></div><span style="flex:1;color:var(--txt2)">${l}</span><span style="font-family:var(--font);color:var(--txt)">${n}</span></div>`});const totKB=st.evidencias.reduce((s,e)=>s+(e.sizeKB||0),0);evHtml+=`<div class="sc-row" style="margin-top:8px;border-top:1px solid var(--bdr);padding-top:8px"><span class="k">Total</span><span class="v">${tot} arch. · ~${totKB} KB</span></div>`;document.getElementById('sum-ev').innerHTML=evHtml;ir('s-resumen')}
+function buildPaquete(){return{version:'3.0',generado:new Date().toISOString(),visita:{minera:st.minera,empresa:st.empresa,servicio:st.servicio,tipo:st.tipo,marco_legal:lI(st.tipo).norma,fecha:document.getElementById('fecha').value,hora_inicio:document.getElementById('hora-ini').value,hora_fin:document.getElementById('hora-fin').value,empleados:document.getElementById('empleados').value,horas_profesionales:document.getElementById('horas-prof').value,capacitaciones:st.caps.filter(c=>c.tema),inspecciones:st.insps.filter(i=>i.sector),otros_temas:document.getElementById('otros').value},evidencias:st.evidencias.map(e=>({id:e.id,tipo:e.tipo,caption:e.caption,sizeKB:e.sizeKB,filename:e.filename,dataUrl:e.dataUrl}))}}
+function exportJSON(){const p=buildPaquete();const v=p.visita;const fecha=(v.fecha||'').replace(/-/g,'');const emp=(v.empresa||'EMP').replace(/\s+/g,'-').toUpperCase().substring(0,10);const nombre=`${fecha}_${v.minera}_${emp}.hys.json`;const blob=new Blob([JSON.stringify(p)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=nombre;a.click();URL.revokeObjectURL(url);showToast('PAQUETE EXPORTADO ✓');try{const rec=JSON.parse(localStorage.getItem('hys_rec')||'[]');rec.unshift({fecha:v.fecha,minera:v.minera,empresa:v.empresa,tipo:v.tipo,fn:nombre});localStorage.setItem('hys_rec',JSON.stringify(rec.slice(0,8)))}catch(e){}}
+function exportTxt(){const p=buildPaquete();const v=p.visita;let t=`INFORME DE VISITA — ${v.minera}\n${'='.repeat(40)}\nEMPRESA: ${v.empresa}\nTIPO: ${(v.tipo||'').toUpperCase()} — ${v.marco_legal}\nSERVICIO: ${v.servicio}\nFECHA: ${v.fecha}\nHORARIO: ${v.hora_inicio} – ${v.hora_fin}\nEMPLEADOS: ${v.empleados}\nHS PROF.: ${v.horas_profesionales}\n\nCAPACITACIONES:\n`;v.capacitaciones.forEach(c=>t+=`  - ${c.tema} | ${c.participantes} pers. | ${c.horas} hs\n`);t+=`\nINSPECCIONES:\n`;v.inspecciones.forEach(i=>t+=`  - ${i.sector}: ${i.observacion} (Hallazgos: ${i.hallazgos})\n`);if(v.otros_temas)t+=`\nOTROS TEMAS:\n${v.otros_temas}\n`;navigator.clipboard.writeText(t).then(()=>showToast('COPIADO ✓')).catch(()=>showToast('COPIADO ✓'))}
+function nuevaVisita(){Object.assign(st,{minera:null,empresa:null,servicio:null,tipo:null,caps:[],insps:[],evidencias:[],capId:0,inspId:0,evId:0});document.querySelectorAll('.mb').forEach(b=>b.classList.remove('sel'));['foto','escaneo','captura','archivo'].forEach(t=>{document.getElementById('lst-'+t).innerHTML='';const lb={foto:'fotos',escaneo:'escaneos',captura:'capturas',archivo:'archivos'};document.getElementById('cnt-'+t).textContent='0 '+lb[t]});ir('s-home');loadRec()}
+function ir(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function loadRec(){try{const rec=JSON.parse(localStorage.getItem('hys_rec')||'[]');const el=document.getElementById('recientes');if(!rec.length){el.textContent='Sin visitas guardadas.';return}el.innerHTML=rec.slice(0,4).map(r=>`<div class="rec-item"><div><div style="font-size:12px;color:var(--txt)">${r.empresa||'—'}</div><div style="font-size:10px;color:var(--txt3);font-family:var(--font)">${r.fecha} · ${r.minera}</div></div><span style="font-size:9px;color:var(--txt3);font-family:var(--font)">${r.fn||''}</span></div>`).join('')}catch(e){}}
+loadRec();
+</script>
+</body>
+</html>
